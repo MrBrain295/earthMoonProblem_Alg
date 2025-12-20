@@ -110,8 +110,8 @@ If a partition is found, it will be output `data/partitions.txt`.
 When the program starts it will ask if you want to run `computeCandidateGraphs`. If you say yes,
 you can enter `numVertLow, numVertHigh, numAttempts` (lower and upper vertex counts, and attempts per size) and choose
 two options:
-* independence-number heuristic (`true` saves graphs with independence number at most n/10 or n/9, implying \chi \geq 10 or 9)
-* chromatic-number search (`true` runs the slower chromatic number check that tries to certify \chi \geq 10 or 9, up to ~1000s each).
+* independence-number heuristic (`true` saves graphs with independence number at most n/10 or n/9, implying χ ≥ 10 or 9)
+* chromatic-number search (`true` runs the slower chromatic number check that tries to certify χ ≥ 10 or 9, up to ~1000s each).
 
 If it finds a biplanar graph of chromatic number \geq 9 or 10, the graph and the two partitions are saved at:
    - `data/candidates{x}/graph_{i}_{n}.txt`
