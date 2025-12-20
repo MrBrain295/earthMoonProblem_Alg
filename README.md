@@ -107,10 +107,13 @@ If a partition is found, it will be output `data/partitions.txt`.
 
 ### Candidate builder
 
-Simply call `computeCandidateGraphs(int numVertLow, int numVertHigh, int numAttempts);` from `main.cpp` where `numVertLow, numVertHigh, numAttempts`
-are respectively the lower number of vertices to find a graph for, the highest number of vertices, and the number of attempts per each number of vertices.
+When the program starts it will ask if you want to run `computeCandidateGraphs`. If you say yes,
+you can enter `numVertLow, numVertHigh, numAttempts` (lower and upper vertex counts, and attempts per size) and choose
+two options:
+* independence-number heuristic (`true` saves graphs with independence number at most n/10 or n/9, implying \chi \geq 10 or 9)
+* chromatic-number search (`true` runs the slower chromatic number check that tries to certify \chi \geq 10 or 9, up to ~1000s each).
 
-If finds a biplanar graph of chromatic number \geq 9 or 10, the graph and the two partitions are saved at:
+If it finds a biplanar graph of chromatic number \geq 9 or 10, the graph and the two partitions are saved at:
    - `data/candidates{x}/graph_{i}_{n}.txt`
 where `{x}` is 9 or 10 (chromatic number), `{i}` current attempt, and `{n}` number of vertices of the graph.
 
