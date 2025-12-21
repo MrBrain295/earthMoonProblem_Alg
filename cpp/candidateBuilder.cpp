@@ -49,22 +49,31 @@ Graph buildMaximalPlanarGraph(int n, const Graph* avoidGraph) {
 /// biplanar graphs on i vertices, and determines if they are candidates for high chromatic
 /// number (\geq 9 or \geq 10).
 void computeCandidateGraphs(int numVertLow, int numVertHigh, int numAttempts, bool ind, bool chr) {
-    unsigned int threadCount = max(1u, thread::hardware_concurrency());
+    constexpr unsigned int defaultThreadCount = 2u;
+    unsigned int detectedThreads = std::thread::hardware_concurrency();
+    unsigned int threadCount = detectedThreads ? detectedThreads : defaultThreadCount; // small fallback keeps some parallelism when detection fails
+    constexpr int progressFrequencyDivisor = 100;
+    constexpr int minAttemptsForParallelization = 4;
     for (int n = numVertLow; n <= numVertHigh; n++) {
         atomic<int> nextAttempt{0};
         atomic<int> completed{0};
         mutex progressMutex;
+        mutex saveMutex;
+        const int reportInterval = max(1, numAttempts / progressFrequencyDivisor);
+        atomic<int> nextReport{reportInterval};
         {
             lock_guard<mutex> lock(progressMutex);
             printProgressBar(0, numAttempts, 
                              "Iteration i = 0/" + to_string(numAttempts) 
-                             + ", numb of vertices = " + to_string(n) + "/" + to_string(numVertHigh) + ": ");
+                             + ", num of vertices = " + to_string(n) + "/" + to_string(numVertHigh) + ": ");
         }
 
-        int workersCount = min<int>(threadCount, numAttempts);
+        unsigned int maxWorkers = std::min(threadCount, static_cast<unsigned int>(numAttempts));
+        int workerCount = numAttempts >= minAttemptsForParallelization ? static_cast<int>(maxWorkers) : 1;
         vector<thread> workers;
-        workers.reserve(workersCount);
+        workers.reserve(workerCount);
 
+        // Captures shared counters and mutexes by reference; all live until workers are joined below.
         auto worker = [&]() {
             while (true) {
                 int i = nextAttempt.fetch_add(1);
@@ -88,29 +97,46 @@ void computeCandidateGraphs(int numVertLow, int numVertHigh, int numAttempts, bo
                 //     pass while coloring with 9,8 colors.
                 if (ind) {
                     if (independenceNumberAtMost(g, n/10)) {
+                        lock_guard<mutex> saveLock(saveMutex);
                         saveCandidateGraph(g, g1, g2, "ind", i, n, 10);
                     } else if (independenceNumberAtMost(g, n/9)) {
+                        lock_guard<mutex> saveLock(saveMutex);
                         saveCandidateGraph(g, g1, g2, "ind", i, n, 9);
                     }
                 }
                 if (chr) {
                     // wait 1000s ~ 16.6 minutes max.
                     if (chromaticNumberAtLeast(g, 10, true, 1000)) {
+                        lock_guard<mutex> saveLock(saveMutex);
                         saveCandidateGraph(g, g1, g2, "chr", i, n, 10);
                     } else if (chromaticNumberAtLeast(g, 9, true, 1000)) {
+                        lock_guard<mutex> saveLock(saveMutex);
                         saveCandidateGraph(g, g1, g2, "chr", i, n, 9);
                     }
                 }
 
                 int done = completed.fetch_add(1) + 1;
-                lock_guard<mutex> lock(progressMutex);
-                printProgressBar(done, numAttempts, 
-                                 "Iteration i = " + to_string(done) + "/" + to_string(numAttempts) 
-                                 + ", numb of vertices = " + to_string(n) + "/" + to_string(numVertHigh) + ": ");
+                bool shouldReport = (done == numAttempts) || (done == 1);
+                if (!shouldReport && reportInterval > 1) {
+                    int target = nextReport.load();
+                    while (done >= target) {
+                        if (nextReport.compare_exchange_weak(target, target + reportInterval)) {
+                            shouldReport = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shouldReport) {
+                    lock_guard<mutex> lock(progressMutex);
+                    printProgressBar(done, numAttempts, 
+                                     "Iteration i = " + to_string(done) + "/" + to_string(numAttempts) 
+                                     + ", num of vertices = " + to_string(n) + "/" + to_string(numVertHigh) + ": ");
+                }
             }
         };
 
-        for (int t = 0; t < workersCount; ++t) {
+        for (int t = 0; t < workerCount; ++t) {
             workers.emplace_back(worker);
         }
         for (auto& w : workers) {
