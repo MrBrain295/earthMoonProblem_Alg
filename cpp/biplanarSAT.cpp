@@ -78,7 +78,7 @@ bool isBiplanarSAT(vector<Edge>& edges, int n) {
     int numEdges = edges.size();
     SatSolver sat(numEdges);
     
-    // TODO: add cardinality constraints:
+    // Cardinality constraints:
     //  at most 3n-6 true variables
     //  at most 3n-6 false variables <=> at least n-(3n-6) true
     int maxPerPartition = 3 * n - 6;
