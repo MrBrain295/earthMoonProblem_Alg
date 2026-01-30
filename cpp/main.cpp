@@ -3,6 +3,7 @@
 #include "biplanarTester.h"
 
 #include <fstream>
+#include <chrono>
 #include <string>
 #include <limits>
 
@@ -43,6 +44,7 @@ int main() {
         if (!path.empty()) {
             if (!loadGraphFromFile(path, edges, n)) return 1;
         } else {
+            cout << "No path provided. Running default test graph (5x4 strong product minus vertex 0)." << endl;
             int a = 5, b = 4;
             n = a * b;
             edges = strongProductEdge(pathGraphEdge(a), a, completeGraphEdge(b), b);
@@ -68,7 +70,7 @@ int main() {
     if (!(cin >> low)) return 0;
     cout << "Enter higher number of vertices: ";
     if (!(cin >> high)) return 0;
-    cout << "Enter number of candidates to build (attempts) per amount of vertex count: ";
+    cout << "Enter number of candidates to build (attempts) per vertex count: ";
     if (!(cin >> attempts)) return 0;
     if (low > high || attempts <= 0 || low <= 0 || high <= 0) {
         cerr << "Invalid numeric input. Ensure 0 < lower <= higher and attempts > 0." << endl;
@@ -76,13 +78,14 @@ int main() {
     }
 
     cout << "Enable independence-number heuristic? (y/n): ";
-    char indC; if (!(cin >> indC)) return 0;
+    char indChoice; if (!(cin >> indChoice)) return 0;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cout << "Enable chromatic-number search? (y/n): ";
-    char chrC; if (!(cin >> chrC)) return 0;
+    char chrChoice; if (!(cin >> chrChoice)) return 0;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    bool ind = (indC == 'y' || indC == 'Y');
-    bool chr = (chrC == 'y' || chrC == 'Y');
+    bool ind = (indChoice == 'y' || indChoice == 'Y');
+    bool chr = (chrChoice == 'y' || chrChoice == 'Y');
 
     computeCandidateGraphs(low, high, attempts, ind, chr);
     return 0;
