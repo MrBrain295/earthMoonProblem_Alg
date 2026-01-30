@@ -11,7 +11,7 @@ using namespace std;
 static bool loadGraphFromFile(const string& path, vector<Edge>& edges, int& n) {
     ifstream in(path);
     if (!in.is_open()) {
-        cerr << "Could not open file: " << path << endl;
+        cerr << "Could not open file: " << path << ". Please check that it exists and is readable." << endl;
         return false;
     }
     int u, v;
@@ -20,6 +20,11 @@ static bool loadGraphFromFile(const string& path, vector<Edge>& edges, int& n) {
         edges.emplace_back(u, v);
         n = max(n, max(u, v) + 1);
     }
+    if (edges.empty()) {
+        cerr << "File contained no edges or invalid format." << endl;
+        return false;
+    }
+    in.close();
     return true;
 }
 
@@ -52,23 +57,29 @@ int main() {
         return 0;
     }
 
-    cout << "Would you like to run the candidate buider (y/n)? ";
+    cout << "Would you like to run the candidate builder (y/n)? ";
     char build;
     if (!(cin >> build)) return 0;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     if (build != 'y' && build != 'Y') return 0;
 
     int low, high, attempts;
     cout << "Enter lower number of vertices: ";
-    cin >> low;
+    if (!(cin >> low)) return 0;
     cout << "Enter higher number of vertices: ";
-    cin >> high;
-    cout << "Enter number of candidates to build (attempts) per ammount of verticie count: ";
-    cin >> attempts;
+    if (!(cin >> high)) return 0;
+    cout << "Enter number of candidates to build (attempts) per amount of vertex count: ";
+    if (!(cin >> attempts)) return 0;
+    if (low > high || attempts <= 0 || low <= 0 || high <= 0) {
+        cerr << "Invalid numeric input. Ensure 0 < lower <= higher and attempts > 0." << endl;
+        return 1;
+    }
 
     cout << "Enable independence-number heuristic? (y/n): ";
-    char indC; cin >> indC;
+    char indC; if (!(cin >> indC)) return 0;
     cout << "Enable chromatic-number search? (y/n): ";
-    char chrC; cin >> chrC;
+    char chrC; if (!(cin >> chrC)) return 0;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     bool ind = (indC == 'y' || indC == 'Y');
     bool chr = (chrC == 'y' || chrC == 'Y');
