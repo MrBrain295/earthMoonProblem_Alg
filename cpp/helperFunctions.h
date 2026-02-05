@@ -62,6 +62,9 @@ bool findIndependentSet(Graph& g, vector<int> independentSet, int index, int k);
 /// Checks if the independence number of [g] is at most [k].
 bool independenceNumberAtMost(Graph& g, int k);
 
+/// Returns an upper bound on the independence number of [g].
+int independenceUpperBound(Graph& g);
+
 /// Determines if edge (u,v) can be added while maintaining planarity.
 bool canAddEdgePlanar(Graph& G, int u, int v);
 ////// 
