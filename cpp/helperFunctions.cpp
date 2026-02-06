@@ -536,7 +536,7 @@ void printProgressBar(int progress, int total, string message) {
     cout << "\r" << message << " [";
     for (int i = 0; i < width; ++i) {
         if (i < filled) cout << "=";
-        else if (i == arrowPosition) cout << ">";
+        else if (arrowPosition != -1 && i == filled) cout << ">";
         else cout << " ";
     }
     cout << "] " << int(percentage * 100.0) << "%" << flush;
