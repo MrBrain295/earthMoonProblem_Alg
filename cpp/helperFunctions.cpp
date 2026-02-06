@@ -528,8 +528,6 @@ void printProgressBar(int progress, int total, string message) {
     float percentage = (float)progress / total;
     const int width = 50;
     int filled = static_cast<int>(percentage * width);
-    if (filled > width) filled = width;
-    if (filled < 0) filled = 0;
 
     cout << "\r" << message << " [";
     for (int i = 0; i < width; ++i) {
