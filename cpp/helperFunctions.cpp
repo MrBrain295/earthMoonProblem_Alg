@@ -530,6 +530,7 @@ void printProgressBar(int progress, int total, string message) {
     percentage = std::clamp(percentage, 0.f, 1.f);
     const int width = 50;
     int filled = static_cast<int>(percentage * width);
+    int percentDisplay = static_cast<int>(percentage * 100.0f);
     bool isComplete = (progress >= total);
     bool showArrow = (!isComplete && filled > 0);
 
@@ -539,7 +540,7 @@ void printProgressBar(int progress, int total, string message) {
         else if (showArrow && i == filled) cout << ">";
         else cout << " ";
     }
-    cout << "] " << int(percentage * 100.0) << "%" << flush;
+    cout << "] " << percentDisplay << "%" << flush;
 
     if (progress >= total) cout << endl;
 }
