@@ -169,6 +169,15 @@ bool independenceNumberAtMost(Graph& g, int k) {
     return !findIndependentSet(g, indeptSet, 0, k+1);
 }
 
+/// Returns an upper bound on the independence number of [g].
+int independenceUpperBound(Graph& g) {
+    int n = num_vertices(g);
+    for (int k = 1; k <= n; ++k) {
+        if (!independenceNumberAtMost(g, k)) return k - 1;
+    }
+    return n;
+}
+
 /// Determines if edge (u,v) can be added while maintaining planarity.
 bool canAddEdgePlanar(Graph& G, int u, int v) {
     // add edge

@@ -66,19 +66,22 @@ void computeCandidateGraphs(int numVertLow, int numVertHigh, int numAttempts, bo
             //    OR
             //     \chi \geq 10,9 or over 1000 seconds 
             //     pass while coloring with 9,8 colors.
+            bool provedChi10ByInd = false;
             if (ind) {
-                if (independenceNumberAtMost(g, n/10)) {
+                int alpha = independenceUpperBound(g);
+                if (alpha <= n/10) {
                     saveCandidateGraph(g, g1, g2, "ind", i, n, 10);
-                } else if (independenceNumberAtMost(g, n/9)) {
+                    provedChi10ByInd = true;
+                } else if (alpha <= n/9) {
                     saveCandidateGraph(g, g1, g2, "ind", i, n, 9);
                 }
             }
-            if (chr) {
+            if (chr && !provedChi10ByInd) {
                 // wait 1000s ~ 16.6 minutes max.
-                if (chromaticNumberAtLeast(g, 10, true, 1000)) {
-                    saveCandidateGraph(g, g1, g2, "chr", i, n, 10);
-                } else if (chromaticNumberAtLeast(g, 9, true, 1000)) {
-                    saveCandidateGraph(g, g1, g2, "chr", i, n, 9);
+                bool atLeast9 = chromaticNumberAtLeast(g, 9, true, 1000);
+                if (atLeast9) {
+                    bool atLeast10 = chromaticNumberAtLeast(g, 10, true, 1000);
+                    saveCandidateGraph(g, g1, g2, "chr", i, n, atLeast10 ? 10 : 9);
                 }
             }
             printProgressBar(i+1, numAttempts, 
