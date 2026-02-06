@@ -534,7 +534,6 @@ void printProgressBar(int progress, int total, string message) {
     int arrowPosition = -1;
     if (!isComplete) {
         arrowPosition = filled;
-        if (arrowPosition >= width) arrowPosition = width - 1;
     }
 
     cout << "\r" << message << " [";
