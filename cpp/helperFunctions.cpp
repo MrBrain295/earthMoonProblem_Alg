@@ -1,4 +1,5 @@
 #include "helperFunctions.h"
+#include <algorithm>
 
 /// Returns graph corresponding to given edge list.
 Graph constructGraph(vector<Edge>& edges, int numVertices) {
@@ -526,15 +527,12 @@ void printProgressBar(int progress, int total, string message) {
     if (total <= 0) return;
 
     float percentage = (float)progress / total;
-    if (percentage < 0.f) percentage = 0.f;
-    if (percentage > 1.f) percentage = 1.f;
+    percentage = std::clamp(percentage, 0.f, 1.f);
     const int width = 50;
     int filled = static_cast<int>(percentage * width);
+    bool isComplete = (progress >= total) || (filled >= width);
     int arrowPosition = -1;
-    if (progress < total) {
-        arrowPosition = filled;
-        if (arrowPosition >= width) arrowPosition = width - 1;
-    }
+    if (!isComplete) arrowPosition = std::min(filled, width - 1);
 
     cout << "\r" << message << " [";
     for (int i = 0; i < width; ++i) {
