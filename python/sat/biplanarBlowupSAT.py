@@ -1,12 +1,28 @@
-import networkx as nx
 import sys
+import os
+
+# Add earthMoonProblem_Alg/python to PYTHONPATH
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..")
+    )
+)
+
+import networkx as nx
 import time
 import concurrent.futures
 from pysat.solvers import Solver
 from pysat.card import CardEnc
-from utils import read_graph, extract_vertices, output_graph, isPlanar, draw_partitions
 from collections import defaultdict
 
+from utils import (
+    read_graph,
+    extract_vertices,
+    output_graph,
+    isPlanar,
+    draw_partitions,
+)
 
 def compute_dfs_tree(edges):
     graph = defaultdict(set)

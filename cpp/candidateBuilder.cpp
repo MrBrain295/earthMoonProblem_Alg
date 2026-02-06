@@ -64,7 +64,7 @@ void computeCandidateGraphs(int numVertLow, int numVertHigh, int numAttempts, bo
             //                <=> 
             //          \alpha \leq n/10, n/9
             //    OR
-            //     \chi \geq 10,9 or over 1000 seconds 
+            //     \chi \geq 10,9 or over 10000 seconds 
             //     pass while coloring with 9,8 colors.
             if (ind) {
                 if (independenceNumberAtMost(g, n/10)) {
@@ -74,10 +74,10 @@ void computeCandidateGraphs(int numVertLow, int numVertHigh, int numAttempts, bo
                 }
             }
             if (chr) {
-                // wait 1000s ~ 16.6 minutes max.
-                if (chromaticNumberAtLeast(g, 10, true, 1000)) {
+                // wait 10000s ~ 166.6 minutes max.
+                if (chromaticNumberAtLeast(g, 10, true, 10000)) {
                     saveCandidateGraph(g, g1, g2, "chr", i, n, 10);
-                } else if (chromaticNumberAtLeast(g, 9, true, 1000)) {
+                } else if (chromaticNumberAtLeast(g, 9, true, 10000)) {
                     saveCandidateGraph(g, g1, g2, "chr", i, n, 9);
                 }
             }
