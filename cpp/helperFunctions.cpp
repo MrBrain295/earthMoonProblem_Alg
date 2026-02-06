@@ -531,7 +531,8 @@ void printProgressBar(int progress, int total, string message) {
     const int width = 50;
     int filled = static_cast<int>(percentage * width);
     bool isComplete = (progress >= total);
-    int percentDisplay = isComplete ? 100 : static_cast<int>(percentage * 100.0f);
+    if (!isComplete && filled >= width) filled = width - 1;
+    int percentDisplay = isComplete ? 100 : std::min(99, static_cast<int>(percentage * 100.0f));
     bool showArrow = (!isComplete && filled > 0);
 
     cout << "\r" << message << " [";
