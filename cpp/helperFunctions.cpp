@@ -531,12 +531,12 @@ void printProgressBar(int progress, int total, string message) {
     const int width = 50;
     int filled = static_cast<int>(percentage * width);
     bool isComplete = (progress >= total) || (filled >= width);
-    int arrowPosition = (!isComplete && filled > 0) ? filled : -1;
+    int arrowPosition = (!isComplete && filled > 0 && filled < width) ? filled : -1;
 
     cout << "\r" << message << " [";
     for (int i = 0; i < width; ++i) {
         if (i < filled) cout << "=";
-        else if (arrowPosition != -1 && i == filled) cout << ">";
+        else if (i == arrowPosition) cout << ">";
         else cout << " ";
     }
     cout << "] " << int(percentage * 100.0) << "%" << flush;
