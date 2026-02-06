@@ -526,6 +526,8 @@ void printProgressBar(int progress, int total, string message) {
     if (total <= 0) return;
 
     float percentage = (float)progress / total;
+    if (percentage < 0.f) percentage = 0.f;
+    if (percentage > 1.f) percentage = 1.f;
     const int width = 50;
     int filled = static_cast<int>(percentage * width);
     int arrowPosition = -1;
@@ -536,8 +538,8 @@ void printProgressBar(int progress, int total, string message) {
 
     cout << "\r" << message << " [";
     for (int i = 0; i < width; ++i) {
-        if (i < filled) cout << "=";
-        else if (i == arrowPosition) cout << ">";
+        if (i == arrowPosition) cout << ">";
+        else if (i < filled) cout << "=";
         else cout << " ";
     }
     cout << "] " << int(percentage * 100.0) << "%" << flush;
