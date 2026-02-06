@@ -523,16 +523,18 @@ void assignEdgeIndices(Graph& G) {
 
 /// Prints progress bar.
 void printProgressBar(int progress, int total, string message) {
-    float percentage = (float)progress / total;
-    float pos = 50.0 * percentage; //50 = width
+    if (total <= 0) return;
 
-    cout << "\033[2A\033[2K\r" << message << endl; // Move up and clear line
-    cout << "\033[2K\r["; // clear line
+    float percentage = (float)progress / total;
+    float pos = 50.0f * percentage; //50 = width
+
+    cout << "\r" << message << " [";
     for (int i = 0; i < 50; ++i) {
         if (i < pos) cout << "=";
         else if (i == pos) cout << ">";
         else cout << " ";
     }
-    cout << "] " << int(percentage * 100.0) << "%" << endl;
-    cout.flush();
+    cout << "] " << int(percentage * 100.0) << "%" << flush;
+
+    if (progress >= total) cout << endl;
 }
